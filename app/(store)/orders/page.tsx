@@ -26,7 +26,7 @@ async function Orders() {
                 </div>
             ) : (
                 <div className="space-y-4 sm:space-y-8">
-                    {orders.map((order: MY_ORDERS_QUERY_RESULT[number]) => (
+                    {orders.map((order) => (
                         <div
                             key={order.orderNumber}
                             className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden"
