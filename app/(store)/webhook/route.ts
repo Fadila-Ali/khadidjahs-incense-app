@@ -41,6 +41,16 @@ export async function POST(req: NextRequest) {
         const session = event.data.object as Stripe.Checkout.Session;
 
         try {
+            const existingOrder = await backendClient.fetch(
+                `*[_type == "order" && stripeCheckoutSessionId == $sessionId][0]`,
+                { sessionId: session.id }
+            );
+
+            if (existingOrder) {
+                console.log("Order already exists, skipping creation:", session.id);
+                return NextResponse.json({ received: true, skipped: true });
+            }
+
             const order = await createOrderInSanity(session);
             console.log("Order created in Sanity: ", order);
         } catch (error) {
