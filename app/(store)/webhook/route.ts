@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     const headersList = await headers();
     const sig = headersList.get("stripe-signature");
 
-    console.log("HIT WEBHOOK!");
+    console.log("🔔 HIT WEBHOOK!");
 
     if (!sig) {
         return NextResponse.json({ error: "No signature" }, { status: 400 });
@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
     if(!webhookSecret) {
-        console.log("Stripe webhook secret is not set.");
+        console.log("❌ Stripe webhook secret is not set.");
         return NextResponse.json(
             { error: "Stripe webhook secret is not set" },
             { status: 400 }
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     try {
         event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
     } catch (err) {
-        console.error("Webhook signature verification failed: ", err);
+        console.error("❌ Webhook signature verification failed: ", err);
         return NextResponse.json(
             { error: `Webhook Error: ${err}`},
             { status: 400 }
@@ -40,21 +40,37 @@ export async function POST(req: NextRequest) {
     if (event.type === "checkout.session.completed") {
         const session = event.data.object as Stripe.Checkout.Session;
 
+        console.log("💳 Processing checkout session:", session.id);
+
         try {
+            // **IMPROVED: Check for existing order with better logging**
             const existingOrder = await backendClient.fetch(
                 `*[_type == "order" && stripeCheckoutSessionId == $sessionId][0]`,
                 { sessionId: session.id }
             );
 
             if (existingOrder) {
-                console.log("Order already exists, skipping creation:", session.id);
-                return NextResponse.json({ received: true, skipped: true });
+                console.log("⚠️ Order already exists, skipping creation:", {
+                    sessionId: session.id,
+                    orderNumber: existingOrder.orderNumber,
+                    existingOrderId: existingOrder._id
+                });
+                return NextResponse.json({ 
+                    received: true, 
+                    skipped: true,
+                    reason: "Order already exists"
+                });
             }
 
+            console.log("✅ No existing order found, creating new order...");
             const order = await createOrderInSanity(session);
-            console.log("Order created in Sanity: ", order);
+            console.log("✅ Order created in Sanity:", {
+                orderId: order._id,
+                orderNumber: order.orderNumber,
+                sessionId: session.id
+            });
         } catch (error) {
-            console.error("Error creating order in Sanity: ", error);
+            console.error("❌ Error creating order in Sanity: ", error);
             return NextResponse.json(
                 { error: "Error creating order"},
                 { status: 500 }
