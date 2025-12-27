@@ -54,6 +54,13 @@ export const productType = defineType({
             type: "number",
             validation: (Rule) => Rule.min(0),
         }),
+        defineField({
+            name: "isNewArrival",
+            title: "New Arrival",
+            type: "boolean",
+            description: "Mark this product as a new arrival",
+            initialValue: false,
+        }),
     ],
     preview: {
         select: {

@@ -43,14 +43,14 @@ function Header({ products, categories }: HeaderProps) {
                         type="text"
                         name="query"
                         placeholder="Search for products"
-                        className="w-full pl-12 pr-4 border-2 border-transparent focus:outline-none focus:bg-white transition-all duration-300 text-sm bg-gray-100 text-gray-800 px-4 py-2 rounded-full focus:ring-2 focus:ring-gray-900 focus:ring-opacity-50 max-w-4xl"
+                        className="w-full pl-12 pr-4 border-2 border-transparent focus:outline-none focus:bg-white transition-all duration-300 text-sm bg-gray-100 text-gray-800 px-4 py-3 rounded-full focus:ring-2 focus:ring-gray-900 focus:ring-opacity-50 max-w-4xl"
                     />
                 </div>
             </Form>
             <div className="flex items-center justify-end-safe space-x-4 mt-4 sm:mt-0 flex-1">
                 <Link href={`/basket`} className="flex flex-col flex-1 relative justify-center sm:justify-start sm:flex-none items-center space-x-2">
                     <TrolleyIcon className="w-8 h-8"/>
-                    <span className="absolute -top-1.5 -right-3 bg-gray-900 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">{itemCount}</span>
+                    <span className="absolute -top-1.5 -right-3 bg-purple-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">{itemCount}</span>
                     <span className="font-bold text-xs text-center">Cart</span>
                 </Link>
                 <ClerkLoaded>

@@ -585,6 +585,13 @@
           "type": "number"
         },
         "optional": true
+      },
+      "isNewArrival": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "boolean"
+        },
+        "optional": true
       }
     }
   },

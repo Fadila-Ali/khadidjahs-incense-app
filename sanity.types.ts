@@ -114,6 +114,7 @@ export type Product = {
     } & CategoryReference
   >;
   stock?: number;
+  isNewArrival?: boolean;
 };
 
 export type BlockContent = Array<
@@ -321,6 +322,7 @@ export type MY_ORDERS_QUERY_RESULT = Array<{
         } & CategoryReference
       >;
       stock?: number;
+      isNewArrival?: boolean;
     } | null;
     quantity?: number;
     _key: string;
@@ -372,6 +374,36 @@ export type ALL_PRODUCTS_QUERY_RESULT = Array<{
     } & CategoryReference
   >;
   stock?: number;
+  isNewArrival?: boolean;
+}>;
+
+// Source: sanity/lib/products/getNewArrivals.ts
+// Variable: NEW_ARRIVALS_QUERY
+// Query: *[            _type == "product" && isNewArrival == true        ] | order(_createdAt desc)[0...8]
+export type NEW_ARRIVALS_QUERY_RESULT = Array<{
+  _id: string;
+  _type: "product";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  slug?: Slug;
+  image?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  description?: BlockContent;
+  price?: number;
+  categories?: Array<
+    {
+      _key: string;
+    } & CategoryReference
+  >;
+  stock?: number;
+  isNewArrival?: boolean;
 }>;
 
 // Source: sanity/lib/products/getProductBySlug.ts
@@ -400,6 +432,7 @@ export type PRODUCT_BY_ID_QUERY_RESULT = {
     } & CategoryReference
   >;
   stock?: number;
+  isNewArrival?: boolean;
 } | null;
 
 // Source: sanity/lib/products/getProductsByCategory.ts
@@ -428,6 +461,7 @@ export type PRODUCTS_BY_CATEGORY_QUERY_RESULT = Array<{
     } & CategoryReference
   >;
   stock?: number;
+  isNewArrival?: boolean;
 }>;
 
 // Source: sanity/lib/products/searchProductsByName.ts
@@ -456,6 +490,7 @@ export type PRODUCT_SEARCH_QUERY_RESULT = Array<{
     } & CategoryReference
   >;
   stock?: number;
+  isNewArrival?: boolean;
 }>;
 
 // Source: sanity/lib/sales/getActiveSaleByCouponCode.ts
@@ -483,6 +518,7 @@ declare module "@sanity/client" {
     '\n        *[_type == "order" && clerkUserId == $userId] | order(orderDate desc) {\n            ...,\n            products[]{\n                ...,\n                product->\n            }\n        }\n    ': MY_ORDERS_QUERY_RESULT;
     '\n        *[\n            _type == "category"\n        ] | order(name asc)\n    ': ALL_CATEGORIES_QUERY_RESULT;
     '\n        *[\n            _type == "product"\n        ] | order(name asc)\n    ': ALL_PRODUCTS_QUERY_RESULT;
+    '\n        *[\n            _type == "product" && isNewArrival == true\n        ] | order(_createdAt desc)[0...8]\n    ': NEW_ARRIVALS_QUERY_RESULT;
     '\n        *[\n            _type == "product" && slug.current == $slug\n        ] | order(name asc)[0]\n    ': PRODUCT_BY_ID_QUERY_RESULT;
     '\n        *[\n            _type == "product"\n            && references(*[_type == "category" && slug.current == $categorySlug]._id)\n        ] | order(name asc)\n    ': PRODUCTS_BY_CATEGORY_QUERY_RESULT;
     '\n        *[\n            _type == "product"\n            && name match $searchParam\n        ] | order(name asc)\n        ': PRODUCT_SEARCH_QUERY_RESULT;
