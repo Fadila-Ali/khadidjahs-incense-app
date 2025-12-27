@@ -7,7 +7,14 @@ import { PackageIcon, TrolleyIcon } from "@sanity/icons";
 import useBasketStore from "@/store/store";
 import { motion, AnimatePresence } from "framer-motion";
 
-function Header() {
+
+type HeaderProps = {
+  products: any[];
+  categories: any[];
+};
+
+
+function Header({ products, categories }: HeaderProps) {
 
     const { user } = useUser();
 
