@@ -31,7 +31,7 @@ export default async function RootLayout({
             </>
           )}
           <main>
-            <Header/>
+            <Header products={[]} categories={[]} />
             {children}
           </main>
           <SanityLive/>

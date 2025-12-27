@@ -110,14 +110,15 @@ async function createOrderInSanity(session: Stripe.Checkout.Session) {
         quantity: item.quantity || 0,
     }));
 
-    const order = await backendClient.create({
+    const order = await backendClient.createIfNotExists({
+        _id: `order-${id}`,
         _type: "order",
         orderNumber,
         stripeCheckoutSessionId: id,
         stripePaymentIntentId: payment_intent,
         customerName,
         stripeCustomerId: customer,
-        clerkUserId: clerkUserId,
+        clerkUserId,
         email: customerEmail,
         currency,
         amountDiscount: total_details?.amount_discount
@@ -128,6 +129,7 @@ async function createOrderInSanity(session: Stripe.Checkout.Session) {
         status: "paid",
         orderDate: new Date().toISOString(),
     });
+
 
     return order;
 }
