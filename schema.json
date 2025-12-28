@@ -72,7 +72,21 @@
         },
         "optional": true
       },
+      "userId": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
       "customerName": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "customerImage": {
         "type": "objectAttribute",
         "value": {
           "type": "string"

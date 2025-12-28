@@ -27,7 +27,9 @@ export type Review = {
   _updatedAt: string;
   _rev: string;
   product?: ProductReference;
+  userId?: string;
   customerName?: string;
+  customerImage?: string;
   rating?: number;
   comment?: string;
   createdAt?: string;
@@ -547,7 +549,9 @@ export type PRODUCT_REVIEWS_QUERY_RESULT = Array<{
   _updatedAt: string;
   _rev: string;
   product?: ProductReference;
+  userId?: string;
   customerName?: string;
+  customerImage?: string;
   rating?: number;
   comment?: string;
   createdAt?: string;

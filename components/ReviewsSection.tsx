@@ -1,7 +1,9 @@
 "use client";
 
 import { Review } from "@/sanity.types";
+import { useUser } from "@clerk/nextjs";
 import { Star } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 
 interface ReviewsSectionProps {
@@ -11,9 +13,9 @@ interface ReviewsSectionProps {
 }
 
 function ReviewsSection({ reviews, productId, productName }: ReviewsSectionProps) {
+    const { user, isSignedIn } = useUser();
     const [showForm, setShowForm] = useState(false);
     const [formData, setFormData] = useState({
-        customerName: "",
         rating: 5,
         comment: "",
     });
@@ -26,25 +28,38 @@ function ReviewsSection({ reviews, productId, productName }: ReviewsSectionProps
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (!isSignedIn || !user) {
+            setSubmitMessage("You must be signed in to submit a review.");
+            return;
+        }
+
         setIsSubmitting(true);
         setSubmitMessage("");
 
         try {
-            const response = await fetch("/api/reviews", {
+            const response = await fetch("/reviews", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     productId,
+                    userId: user.id,
+                    customerName: user.fullName || user.firstName || "Anonymous",
+                    customerImage: user.imageUrl,
                     ...formData,
                 }),
             });
 
             if (response.ok) {
-                setSubmitMessage("Review submitted successfully! It will appear after approval.");
-                setFormData({ customerName: "", rating: 5, comment: "" });
+                setSubmitMessage("Review submitted successfully!");
+                setFormData({ rating: 5, comment: "" });
                 setShowForm(false);
+                // Refresh the page to show the new review
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
             } else {
                 setSubmitMessage("Failed to submit review. Please try again.");
             }
@@ -84,12 +99,16 @@ function ReviewsSection({ reviews, productId, productName }: ReviewsSectionProps
                             <span className="text-gray-600">({reviews.length} reviews)</span>
                         </div>
                     </div>
-                    <button
-                        onClick={() => setShowForm(!showForm)}
-                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                        {showForm ? "Cancel" : "Write a Review"}
-                    </button>
+                    {isSignedIn ? (
+                        <button
+                            onClick={() => setShowForm(!showForm)}
+                            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                            {showForm ? "Cancel" : "Write a Review"}
+                        </button>
+                    ) : (
+                        <p className="text-gray-600">Sign in to write a review</p>
+                    )}
                 </div>
 
                 {submitMessage && (
@@ -100,19 +119,22 @@ function ReviewsSection({ reviews, productId, productName }: ReviewsSectionProps
                     </div>
                 )}
 
-                {showForm && (
+                {showForm && isSignedIn && user && (
                     <form onSubmit={handleSubmit} className="bg-gray-50 p-6 rounded-lg mb-8">
                         <h3 className="text-xl font-semibold mb-4">Write a Review for {productName}</h3>
                         
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium mb-2">Your Name</label>
-                            <input
-                                type="text"
-                                value={formData.customerName}
-                                onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
-                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required
+                        <div className="mb-4 flex items-center gap-3">
+                            <Image
+                                src={user.imageUrl}
+                                alt={user.fullName || "User"}
+                                width={48}
+                                height={48}
+                                className="rounded-full"
                             />
+                            <div>
+                                <p className="font-semibold">{user.fullName || user.firstName}</p>
+                                <p className="text-sm text-gray-600">Posting as</p>
+                            </div>
                         </div>
 
                         <div className="mb-4">
@@ -126,6 +148,7 @@ function ReviewsSection({ reviews, productId, productName }: ReviewsSectionProps
                                 value={formData.comment}
                                 onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-32"
+                                placeholder="Share your experience with this product..."
                                 required
                             />
                         </div>
@@ -147,23 +170,42 @@ function ReviewsSection({ reviews, productId, productName }: ReviewsSectionProps
                 ) : (
                     reviews.map((review) => (
                         <div key={review._id} className="border-b pb-6">
-                            <div className="flex items-start justify-between mb-2">
-                                <div>
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <span className="font-semibold">{review.customerName}</span>
-                                        {review.verified && (
-                                            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                                                Verified Purchase
-                                            </span>
-                                        )}
+                            <div className="flex items-start gap-4 mb-2">
+                                {review.customerImage ? (
+                                    <Image
+                                        src={review.customerImage}
+                                        alt={review.customerName || "Customer"}
+                                        width={48}
+                                        height={48}
+                                        className="rounded-full"
+                                    />
+                                ) : (
+                                    <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center">
+                                        <span className="text-gray-600 font-semibold">
+                                            {review.customerName?.charAt(0) || "?"}
+                                        </span>
                                     </div>
-                                    {renderStars(review.rating || 0)}
+                                )}
+                                <div className="flex-1">
+                                    <div className="flex items-start justify-between mb-1">
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <span className="font-semibold">{review.customerName}</span>
+                                                {review.verified && (
+                                                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                                                        Verified Purchase
+                                                    </span>
+                                                )}
+                                            </div>
+                                            {renderStars(review.rating || 0)}
+                                        </div>
+                                        <span className="text-sm text-gray-500">
+                                            {review.createdAt && new Date(review.createdAt).toLocaleDateString()}
+                                        </span>
+                                    </div>
+                                    <p className="text-gray-700 mt-2">{review.comment}</p>
                                 </div>
-                                <span className="text-sm text-gray-500">
-                                    {review.createdAt && new Date(review.createdAt).toLocaleDateString()}
-                                </span>
                             </div>
-                            <p className="text-gray-700">{review.comment}</p>
                         </div>
                     ))
                 )}

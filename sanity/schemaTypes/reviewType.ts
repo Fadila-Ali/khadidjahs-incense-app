@@ -15,10 +15,21 @@ export const reviewType = defineType({
             validation: (Rule) => Rule.required(),
         }),
         defineField({
+            name: "userId",
+            title: "User ID",
+            type: "string",
+            validation: (Rule) => Rule.required(),
+        }),
+        defineField({
             name: "customerName",
             title: "Customer Name",
             type: "string",
             validation: (Rule) => Rule.required(),
+        }),
+        defineField({
+            name: "customerImage",
+            title: "Customer Image",
+            type: "url",
         }),
         defineField({
             name: "rating",
@@ -50,6 +61,7 @@ export const reviewType = defineType({
             title: "customerName",
             subtitle: "rating",
             product: "product.name",
+            media: "customerImage",
         },
         prepare(select) {
             return {
