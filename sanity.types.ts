@@ -13,6 +13,27 @@
  */
 
 // Source: schema.json
+export type ProductReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "product";
+};
+
+export type Review = {
+  _id: string;
+  _type: "review";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  product?: ProductReference;
+  customerName?: string;
+  rating?: number;
+  comment?: string;
+  createdAt?: string;
+  verified?: boolean;
+};
+
 export type Sale = {
   _id: string;
   _type: "sale";
@@ -26,13 +47,6 @@ export type Sale = {
   validFrom?: string;
   validUntil?: string;
   isActive?: boolean;
-};
-
-export type ProductReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "product";
 };
 
 export type Order = {
@@ -260,8 +274,9 @@ export type Geopoint = {
 };
 
 export type AllSanitySchemaTypes =
-  | Sale
   | ProductReference
+  | Review
+  | Sale
   | Order
   | Category
   | Slug
@@ -464,6 +479,35 @@ export type PRODUCTS_BY_CATEGORY_QUERY_RESULT = Array<{
   isNewArrival?: boolean;
 }>;
 
+// Source: sanity/lib/products/getSimilarProducts.ts
+// Variable: SIMILAR_PRODUCTS_QUERY
+// Query: *[            _type == "product" &&            _id != $productId &&            count((categories[]->_id)[@ in $categories]) > 0        ] | order(_createdAt desc)[0...5]
+export type SIMILAR_PRODUCTS_QUERY_RESULT = Array<{
+  _id: string;
+  _type: "product";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  slug?: Slug;
+  image?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  description?: BlockContent;
+  price?: number;
+  categories?: Array<
+    {
+      _key: string;
+    } & CategoryReference
+  >;
+  stock?: number;
+  isNewArrival?: boolean;
+}>;
+
 // Source: sanity/lib/products/searchProductsByName.ts
 // Variable: PRODUCT_SEARCH_QUERY
 // Query: *[            _type == "product"            && name match $searchParam        ] | order(name asc)
@@ -491,6 +535,23 @@ export type PRODUCT_SEARCH_QUERY_RESULT = Array<{
   >;
   stock?: number;
   isNewArrival?: boolean;
+}>;
+
+// Source: sanity/lib/reviews/getProductReviews.ts
+// Variable: PRODUCT_REVIEWS_QUERY
+// Query: *[            _type == "review" &&            product._ref == $productId        ] | order(createdAt desc)
+export type PRODUCT_REVIEWS_QUERY_RESULT = Array<{
+  _id: string;
+  _type: "review";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  product?: ProductReference;
+  customerName?: string;
+  rating?: number;
+  comment?: string;
+  createdAt?: string;
+  verified?: boolean;
 }>;
 
 // Source: sanity/lib/sales/getActiveSaleByCouponCode.ts
@@ -521,7 +582,9 @@ declare module "@sanity/client" {
     '\n        *[\n            _type == "product" && isNewArrival == true\n        ] | order(_createdAt desc)[0...8]\n    ': NEW_ARRIVALS_QUERY_RESULT;
     '\n        *[\n            _type == "product" && slug.current == $slug\n        ] | order(name asc)[0]\n    ': PRODUCT_BY_ID_QUERY_RESULT;
     '\n        *[\n            _type == "product"\n            && references(*[_type == "category" && slug.current == $categorySlug]._id)\n        ] | order(name asc)\n    ': PRODUCTS_BY_CATEGORY_QUERY_RESULT;
+    '\n        *[\n            _type == "product" &&\n            _id != $productId &&\n            count((categories[]->_id)[@ in $categories]) > 0\n        ] | order(_createdAt desc)[0...5]\n    ': SIMILAR_PRODUCTS_QUERY_RESULT;
     '\n        *[\n            _type == "product"\n            && name match $searchParam\n        ] | order(name asc)\n        ': PRODUCT_SEARCH_QUERY_RESULT;
+    '\n        *[\n            _type == "review" &&\n            product._ref == $productId\n        ] | order(createdAt desc)\n    ': PRODUCT_REVIEWS_QUERY_RESULT;
     '\n        *[\n            _type == "sale"\n            && isActive == true\n            && couponCode == $couponCode\n        ] | order(validFrom desc)[0]\n        ': ACTIVE_SALE_BY_COUPON_QUERY_RESULT;
   }
 }
