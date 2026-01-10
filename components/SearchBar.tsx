@@ -95,7 +95,7 @@ function SearchBar() {
                             }
                         }}
                         placeholder="Search for products..."
-                        className="w-full pl-12 pr-12 py-3 border-2 border-gray-200 rounded-full focus:outline-none focus:border-blue-500 transition-colors"
+                        className="w-full pl-12 pr-12 py-3 border-2 border-gray-200 rounded-full focus:outline-none focus:border-gray-800 transition-colors"
                     />
                     {searchTerm && (
                         <button
@@ -111,10 +111,10 @@ function SearchBar() {
 
             {/* Search Results Dropdown */}
             {showResults && (
-                <div className="absolute top-full mt-2 w-full bg-white rounded-lg shadow-2xl border border-gray-200 max-h-[500px] overflow-y-auto z-50">
+                <div className="absolute top-full mt-2 w-full bg-white rounded-lg shadow-2xl border border-gray-200 max-h-125 overflow-y-auto z-50">
                     {isLoading ? (
                         <div className="p-8 text-center">
-                            <div className="inline-block w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                            <div className="inline-block w-8 h-8 border-4 border-gray-800 border-t-transparent rounded-full animate-spin"></div>
                             <p className="mt-2 text-gray-600">Searching...</p>
                         </div>
                     ) : results.length > 0 ? (
@@ -132,7 +132,7 @@ function SearchBar() {
                                         onClick={handleResultClick}
                                         className="flex items-center gap-4 p-3 hover:bg-gray-50 transition-colors"
                                     >
-                                        <div className="relative w-16 h-16 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
+                                        <div className="relative w-16 h-16 shrink-0 bg-gray-100 rounded-lg overflow-hidden">
                                             {product.image ? (
                                                 <Image
                                                     src={imageUrl(product.image).url()}
@@ -160,7 +160,7 @@ function SearchBar() {
                                                     )
                                                     .join(" ") || "No description"}
                                             </p>
-                                            <p className="text-sm font-bold text-blue-600 mt-1">
+                                            <p className="text-sm font-bold text-yellow-600 mt-1">
                                                 ${product.price?.toFixed(2)}
                                             </p>
                                         </div>
@@ -174,7 +174,7 @@ function SearchBar() {
                             </div>
                             <button
                                 onClick={handleSubmit}
-                                className="w-full p-3 text-center text-blue-600 hover:bg-blue-50 border-t font-medium transition-colors"
+                                className="w-full p-3 text-center text-yellow-600 hover:bg-yellow-50 border-t font-medium transition-colors"
                             >
                                 See all results for "{searchTerm}"
                             </button>

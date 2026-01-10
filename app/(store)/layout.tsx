@@ -6,6 +6,7 @@ import { SanityLive } from "@/sanity/lib/live";
 import { VisualEditing } from "next-sanity/visual-editing";
 import { draftMode } from "next/headers";
 import { DisableDraftMode } from "@/components/disableDraftMode";
+import WishlistSync from "@/components/WishlistSync";
 
 
 export const metadata: Metadata = {
@@ -32,6 +33,7 @@ export default async function RootLayout({
           )}
           <main>
             <Header products={[]} categories={[]}/>
+            <WishlistSync />
             {children}
           </main>
           <SanityLive/>
