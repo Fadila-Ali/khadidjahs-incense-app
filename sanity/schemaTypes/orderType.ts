@@ -125,6 +125,31 @@ export const orderType = defineType({
             type: "datetime",
             validation: (Rule) => Rule.required(),
         }),
+        defineField({
+            name: "emailsSent",
+            title: "Emails Sent",
+            type: "object",
+            fields: [
+                { name: "orderConfirmation", type: "boolean", initialValue: false },
+                { name: "shippingUpdate", type: "boolean", initialValue: false },
+                { name: "reviewReminder", type: "boolean", initialValue: false },
+            ],
+        }),
+        defineField({
+            name: "trackingNumber",
+            title: "Tracking Number",
+            type: "string",
+        }),
+        defineField({
+            name: "carrier",
+            title: "Shipping Carrier",
+            type: "string",
+        }),
+        defineField({
+            name: "trackingUrl",
+            title: "Tracking URL",
+            type: "url",
+        }),
     ],
     preview: {
         select: {

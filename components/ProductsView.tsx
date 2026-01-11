@@ -55,7 +55,10 @@ function ProductsView({ products, categories }: ProductsViewProps) {
             <section className="flex-1">
                 <div>
                     {filteredProducts.length > 0 ? (
-                        <ProductGrid products={filteredProducts} />
+                        <>
+                            <h2 className="text-3xl font-bold text-gray-900 mt-4">All Products</h2>
+                            <ProductGrid products={filteredProducts} />
+                        </>
                     ) : (
                         <div className="text-center py-12">
                             <p className="text-gray-600 text-lg">No products found</p>

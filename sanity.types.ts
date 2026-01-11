@@ -13,6 +13,18 @@
  */
 
 // Source: schema.json
+export type Newsletter = {
+  _id: string;
+  _type: "newsletter";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  email?: string;
+  subscribedAt?: string;
+  status?: "active" | "unsubscribed";
+  source?: string;
+};
+
 export type Wishlist = {
   _id: string;
   _type: "wishlist";
@@ -93,6 +105,14 @@ export type Order = {
   amountDiscount?: number;
   status?: "pending" | "paid" | "shipped" | "delivered" | "cancelled";
   orderDate?: string;
+  emailsSent?: {
+    orderConfirmation?: boolean;
+    shippingUpdate?: boolean;
+    reviewReminder?: boolean;
+  };
+  trackingNumber?: string;
+  carrier?: string;
+  trackingUrl?: string;
 };
 
 export type Category = {
@@ -293,6 +313,7 @@ export type Geopoint = {
 };
 
 export type AllSanitySchemaTypes =
+  | Newsletter
   | Wishlist
   | Review
   | Sale
@@ -371,6 +392,14 @@ export type MY_ORDERS_QUERY_RESULT = Array<{
   amountDiscount?: number;
   status?: "cancelled" | "delivered" | "paid" | "pending" | "shipped";
   orderDate?: string;
+  emailsSent?: {
+    orderConfirmation?: boolean;
+    shippingUpdate?: boolean;
+    reviewReminder?: boolean;
+  };
+  trackingNumber?: string;
+  carrier?: string;
+  trackingUrl?: string;
 }>;
 
 // Source: sanity/lib/products/getAllCategories.ts
@@ -456,7 +485,7 @@ export type NEW_ARRIVALS_QUERY_RESULT = Array<{
     [internalGroqTypeReferenceTo]?: "category";
   }>;
   stock?: number;
-  isNewArrival?: boolean;
+  isNewArrival: true;
 }>;
 
 // Source: sanity/lib/products/getProductBySlug.ts

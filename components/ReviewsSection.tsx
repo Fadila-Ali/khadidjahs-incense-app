@@ -102,7 +102,7 @@ function ReviewsSection({ reviews, productId, productName }: ReviewsSectionProps
                     {isSignedIn ? (
                         <button
                             onClick={() => setShowForm(!showForm)}
-                            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                            className="bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-yellow-700 transition-colors"
                         >
                             {showForm ? "Cancel" : "Write a Review"}
                         </button>

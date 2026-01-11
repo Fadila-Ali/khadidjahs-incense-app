@@ -2,6 +2,13 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Add padding to body on mobile to account for fixed bottom nav */
+@media (max-width: 768px) {
+  body {
+    padding-bottom: 70px;
+  }
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

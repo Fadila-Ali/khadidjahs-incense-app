@@ -69,6 +69,24 @@ export async function POST(req: NextRequest) {
                 orderNumber: order.orderNumber,
                 sessionId: session.id
             });
+
+            // **ADD THIS: Send order confirmation email**
+            try {
+                const baseUrl = process.env.NODE_ENV === 'production'
+                    ? `https://${process.env.VERCEL_URL}`
+                    : process.env.NEXT_PUBLIC_BASE_URL;
+
+                await fetch(`${baseUrl}/api/emails/order-confirmation`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ orderId: order._id }),
+                });
+                console.log("📧 Order confirmation email sent for order:", order.orderNumber);
+            } catch (emailError) {
+                console.error("❌ Error sending order confirmation email:", emailError);
+                // Don't fail the webhook if email fails
+            }
+
         } catch (error) {
             console.error("❌ Error creating order in Sanity: ", error);
             return NextResponse.json(
@@ -129,7 +147,6 @@ async function createOrderInSanity(session: Stripe.Checkout.Session) {
         status: "paid",
         orderDate: new Date().toISOString(),
     });
-
 
     return order;
 }
