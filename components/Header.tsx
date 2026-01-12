@@ -27,7 +27,7 @@ function Header({ products, categories }: HeaderProps) {
     }
 
     return (
-        <header className="sticky top-0 z-50 bg-white shadow-md border-b border-gray-200">
+        <header className="">
             <div className="container mx-auto px-4 py-3">
                 {/* Desktop Layout */}
                 <div className="hidden md:flex items-center justify-between gap-6">
@@ -73,9 +73,13 @@ function Header({ products, categories }: HeaderProps) {
 
                             <Link href="/basket" className="relative flex flex-col items-center hover:text-yellow-600 transition-colors">
                                 <TrolleyIcon className="w-6 h-6" />
-                                {itemCount >= 0 && (
+                                {user ? (
                                     <span className="absolute -top-1 -right-2 bg-yellow-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
                                         {itemCount}
+                                    </span>
+                                ): (
+                                    <span className="absolute -top-1 -right-4 bg-yellow-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+                                        0
                                     </span>
                                 )}
                                 <span className="text-xs font-semibold mt-1">Cart</span>
@@ -163,13 +167,17 @@ function Header({ products, categories }: HeaderProps) {
                             </Link>
                         )}
 
-                        <Link href="/basket" className="relative flex flex-col items-center text-gray-600 hover:text-yellow-600 transition-colors">
+                        <Link href="/basket" className="relative flex flex-col items-center hover:text-yellow-600 transition-colors">
                             <TrolleyIcon className="w-6 h-6" />
-                            {itemCount >= 0 && (
-                                <span className="absolute -top-1 -right-2.5 bg-yellow-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs font-bold">
-                                    {itemCount}
-                                </span>
-                            )}
+                                {user ? (
+                                    <span className="absolute -top-1 -right-2 bg-yellow-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+                                        {itemCount}
+                                    </span>
+                                ): (
+                                    <span className="absolute -top-1 -right-3.5 bg-yellow-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+                                        0
+                                    </span>
+                                )}
                             <span className="text-xs font-semibold mt-1">Cart</span>
                         </Link>
                     </div>

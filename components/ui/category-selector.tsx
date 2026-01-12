@@ -30,7 +30,7 @@ export function CategorySelectorComponent({
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
+            <PopoverTrigger asChild suppressHydrationWarning>
                 <Button
                     variant={"outline"}
                     role="combobox"
@@ -43,7 +43,7 @@ export function CategorySelectorComponent({
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0"/>
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-full p-0">
+            <PopoverContent className="w-full p-0" suppressHydrationWarning>
                 <Command>
                     <CommandInput
                         placeholder="Search category..."
